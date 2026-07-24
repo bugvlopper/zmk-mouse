@@ -1,2 +1,2 @@
-confif MYMOUSE
-    def_bool $(shield_list_contains,mymouse)
+config SHIELD_MYMOUSE
+    def_bool $(shields_list_contains,mymouse)
