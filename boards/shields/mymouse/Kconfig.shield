@@ -1,0 +1,2 @@
+confif MYMOUSE
+    def_bool $(shield_list_contains,mymouse)
