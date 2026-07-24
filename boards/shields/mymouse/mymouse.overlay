@@ -1,48 +1,48 @@
-#include <zephyr/dt-bindings/input/input-event-codes.h>
 
-&pinctrl {
-    spi0_default: spi0_default {
-        group1 {
-            psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
-                    <NRF_PSEL(SPIM_MOSI, 0, 10)>,
-                    <NRF_PSEL(SPIM_MISO, 1, 11)>;
-        };
-    };
 
-    spi0_sleep: spi0_sleep {
-        group1 {
-            psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
-                    <NRF_PSEL(SPIM_MOSI, 0, 10)>,
-                    <NRF_PSEL(SPIM_MISO, 1, 11)>;
-            low-power-enable;
-        };
+#include <dt-bindings/input/input-event-codes.h>
+
+&spi1 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+    pinctrl-0 = <&spi1_default>;
+    pinctrl-1 = <&spi1_sleep>;
+    pinctrl-names = "default", "sleep";
+    
+    cs-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+    
+    paw3395: paw3395@0 {
+        compatible = "pixart,paw3395";
+        reg = <0>;
+        spi-max-frequency = <2000000>;
+        
+        /* Broche d'interruption (Motion) reliée à ton capteur */
+        irq-gpios = <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
     };
 };
 
-&spi0 {
-    status = "okay";
-    pinctrl-0 = <&spi0_default>;
-    pinctrl-1 = <&spi0_sleep>;
-    pinctrl-names = "default", "sleep";
-    cs-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
+/* Définition des broches SPI (SCLK, MOSI, MISO, CS) - Exemple de broches sur nice!nano */
+&pinctrl {
+    spi1_default: spi1_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,  /* SCLK */
+                    <NRF_PSEL(SPIM_MOSI, 0, 10)>, /* MOSI */
+                    <NRF_PSEL(SPIM_MISO, 1, 11)>; /* MISO */
+        };
+    };
 
-    pd0: pd@0 {
-        compatible = "pixart,paw3395";
-        status = "okay";
-        label = "MOU0";
-        reg = <0>;
-        spi-max-frequency = <4000000>;
-        irq-gpios = <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        cpi = <600>;
-        evt-type = <INPUT_EV_REL>;
-        x-input-code = <INPUT_REL_X>;
-        y-input-code = <INPUT_REL_Y>;
+    spi1_sleep: spi1_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 10)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 11)>;
+        };
     };
 };
 
 / {
-    mouse_input_listener {
-        compatible = "zmk,input-listener";
-        device = <&pd0>;
+    sensors {
+        compatible = "zmk,keymap-sensors";
+        sensors = <&paw3395>;
     };
 };
