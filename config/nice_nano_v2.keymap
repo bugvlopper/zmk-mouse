@@ -1,20 +1,37 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/mouse.h>
 
 / {
-    /* Simulation d'un kscan fictif à 0 touche si tu n'as pas de boutons physiques */
-    kscan0: kscan {
-        compatible = "zmk,kscan-mock";
-        columns = <0>;
-        rows = <0>;
-        events = <0>;
+    /* 1. On indique à ZMK quelle matrice et quelle transformation utiliser */
+    chosen {
+        zmk,kscan = &kscan0;
+        zmk,matrix-transform = &default_transform;
     };
 
+    /* 2. On crée une fausse matrice (1 seule touche branchée sur un pin au hasard) */
+    kscan0: kscan_0 {
+        compatible = "zmk,kscan-gpio-direct";
+        wakeup-source;
+        input-gpios = <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; 
+    };
+
+    /* 3. On crée la transformation mathématique (1 colonne, 1 ligne) */
+    default_transform: keymap_transform_0 {
+        compatible = "zmk,matrix-transform";
+        columns = <1>;
+        rows = <1>;
+        map = <
+            RC(0,0)
+        >;
+    };
+
+    /* 4. On crée la carte des touches (Keymap) avec notre unique touche désactivée (&none) */
     keymap {
         compatible = "zmk,keymap";
 
         default_layer {
-            bindings = <>;
+            bindings = <&none>;
         };
     };
 };
