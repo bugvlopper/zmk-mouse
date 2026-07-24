@@ -9,7 +9,7 @@
     pinctrl-1 = <&spi1_sleep>;
     pinctrl-names = "default", "sleep";
     
-    cs-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+    cs-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
     
     paw3395: paw3395@0 {
         compatible = "pixart,paw3395";
